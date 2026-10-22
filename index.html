@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aprobación de título, tutor y jurado · UNESR Núcleo Los Teques</title>
+<meta name="description" content="Ruta interactiva del procedimiento para la aprobación de título, tutor y jurado de tesis de grado, proyecto y tesis doctorales. UNESR Núcleo Los Teques.">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<style>
+  :root{
+    --azul-900:#08214a;
+    --azul-700:#123f88;
+    --oro:#d4af37;
+    --tinta:#1f2937;
+    --gris:#f4f6fb;
+  }
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--gris);
+    color:var(--tinta);
+    font-family:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  }
+  section{scroll-margin-top:84px}
+
+  /* ---------- Colores por actor ---------- */
+  [data-actor="participante"]{--c:#1d4ed8;--bg:#e6edfd}
+  [data-actor="subdireccion"]{--c:#0f766e;--bg:#e0f5f2}
+  [data-actor="comision"]   {--c:#6d28d9;--bg:#efe8fd}
+  [data-actor="secretaria"] {--c:#c2410c;--bg:#fdece0}
+  [data-actor="control"]    {--c:#be185d;--bg:#fde7f0}
+
+  /* ---------- Navbar ---------- */
+  .navbar-app{
+    background:rgba(8,33,74,.97);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid rgba(255,255,255,.08);
+  }
+  .navbar-app .navbar-brand{font-weight:700;letter-spacing:.3px}
+  .navbar-app .nav-link{color:rgba(255,255,255,.78);font-size:.92rem}
+  .navbar-app .nav-link:hover,.navbar-app .nav-link:focus{color:#fff}
+
+  /* ---------- Hero ---------- */
+  .hero{
+    background:
+      radial-gradient(1100px 380px at 92% -12%, rgba(212,175,55,.30), transparent 62%),
+      linear-gradient(135deg,var(--azul-900),var(--azul-700));
+    color:#fff;
+    position:relative;
+    overflow:hidden;
+    padding:4.5rem 0 3.5rem;
+  }
+  .hero::after{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background-image:
+      linear-gradient(rgba(255,255,255,.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.045) 1px, transparent 1px);
+    background-size:34px 34px;
+  }
+  .hero > .container{position:relative;z-index:1}
+  .hero h1{font-weight:800;letter-spacing:-.5px}
+  .badge-oro{
+    background:rgba(212,175,55,.16);
+    color:#f3d98b;
+    border:1px solid rgba(212,175,55,.5);
+    font-weight:600;
+  }
+  .hero .lead{color:rgba(255,255,255,.85)}
+
+  /* ---------- Tarjetas ---------- */
+  .card-soft{
+    background:#fff;
+    border:0;
+    border-radius:1rem;
+    box-shadow:0 6px 24px rgba(15,40,90,.07);
+  }
+  .stat-card{height:100%;padding:1.1rem 1.2rem;border-radius:1rem;background:#fff;border:1px solid #e6ecf7}
+  .stat-num{font-size:1.7rem;font-weight:800;line-height:1;color:var(--azul-700)}
+  .stat-lbl{font-size:.8rem;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;font-weight:700}
+  .kicker{
+    font-size:.78rem;font-weight:800;letter-spacing:1.4px;
+    text-transform:uppercase;color:var(--azul-700);opacity:.8;
+  }
+
+  /* ---------- Stepper ---------- */
+  .stepper{
+    display:flex;gap:.6rem;overflow-x:auto;
+    padding:.25rem .25rem 1rem;
+    scroll-snap-type:x proximity;
+  }
+  .stepper::-webkit-scrollbar{height:8px}
+  .stepper::-webkit-scrollbar-thumb{background:#cfd8ea;border-radius:999px}
+  .step-btn{
+    flex:0 0 auto;display:flex;align-items:center;gap:.6rem;
+    background:#fff;border:1px solid #dfe6f3;border-radius:.9rem;
+    padding:.55rem .85rem;min-width:172px;max-width:220px;
+    scroll-snap-align:center;transition:.18s;
+    font-size:.85rem;font-weight:600;color:#334155;text-align:left;
+  }
+  .step-btn:hover{border-color:var(--c);transform:translateY(-2px)}
+  .step-btn .step-num{
+    width:1.9rem;height:1.9rem;border-radius:50%;
+    background:var(--bg);color:var(--c);
+    display:grid;place-items:center;font-weight:800;font-size:.85rem;flex:0 0 auto;
+  }
+  .step-btn.active{
+    background:var(--c);border-color:var(--c);color:#fff;
+    box-shadow:0 8px 20px rgba(15,40,90,.18);
+  }
+  .step-btn.active .step-num{background:#fff;color:var(--c)}
+
+  /* ---------- Detalle ---------- */
+  .detalle{animation:fade .32s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .actor-badge{
+    display:inline-flex;align-items:center;gap:.45rem;
+    background:var(--bg);color:var(--c);border:1px solid var(--c);
+    border-radius:999px;padding:.3rem .8rem;font-size:.78rem;font-weight:700;
+  }
+  .lista-acciones{list-style:none;padding:0;margin:0;display:grid;gap:.5rem}
+  .lista-acciones li{
+    display:flex;gap:.6rem;align-items:flex-start;
+    background:#f8fafd;border:1px solid #e8eefa;border-radius:.7rem;
+    padding:.6rem .8rem;font-size:.93rem;
+  }
+  .lista-acciones i{color:var(--c);font-size:1.05rem;margin-top:.1rem;flex:0 0 auto}
+
+  /* ---------- Tarjetas de actor ---------- */
+  .actor-card{
+    background:#fff;border-radius:1rem;border:1px solid #e5eaf4;
+    overflow:hidden;height:100%;box-shadow:0 6px 20px rgba(15,40,90,.05);
+    display:flex;flex-direction:column;
+  }
+  .actor-card-head{
+    display:flex;gap:.55rem;align-items:center;
+    padding:.85rem 1rem;background:var(--bg);color:var(--c);
+    font-weight:700;font-size:.88rem;border-bottom:1px solid #e5eaf4;
+  }
+  .actor-card-head i{font-size:1.1rem}
+  .actor-step{
+    display:flex;align-items:center;gap:.6rem;width:100%;
+    background:none;border:0;border-bottom:1px dashed #eef1f8;
+    padding:.62rem 1rem;text-align:left;font-size:.87rem;color:#374151;
+    transition:background .15s,color .15s;
+  }
+  .actor-step:last-child{border-bottom:0}
+  .actor-step:hover{background:#f7f9ff;color:var(--c)}
+  .mini-num{
+    width:1.5rem;height:1.5rem;border-radius:50%;
+    background:var(--bg);color:var(--c);
+    display:grid;place-items:center;font-size:.73rem;font-weight:800;flex:0 0 auto;
+  }
+
+  /* ---------- Portafolio ---------- */
+  .doc-item{
+    display:flex;gap:.75rem;align-items:center;
+    padding:.75rem .9rem;border:1px solid #e6ecf7;border-radius:.75rem;
+    background:#fff;transition:.15s;
+  }
+  .doc-item:hover{border-color:#c9d6ef;background:#fbfcff}
+  .doc-item input{width:1.15rem;height:1.15rem;margin:0;flex:0 0 auto;cursor:pointer}
+  .doc-item .doc-txt{font-size:.93rem;cursor:pointer}
+  .doc-item.hecho{background:#f1f8f3;border-color:#bfe3c9}
+  .doc-item.hecho .doc-txt{text-decoration:line-through;color:#6b7280}
+  .doc-icon{
+    width:2rem;height:2rem;border-radius:.6rem;display:grid;place-items:center;
+    background:#eef3fd;color:#1d4ed8;flex:0 0 auto;font-size:.95rem;
+  }
+
+  /* ---------- Fechas ---------- */
+  .fecha-card{
+    border-radius:.9rem;padding:1rem 1.1rem;border:1px solid #e6ecf7;background:#fff;height:100%;
+  }
+  .fecha-card .fc-lbl{font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:#6b7280}
+  .fecha-card .fc-val{font-weight:700;font-size:1rem;margin-top:.25rem;color:#111827;text-transform:capitalize}
+  .fecha-card.destacado{background:#f7faff;border-color:#c9d6ef}
+
+  footer.app-footer{background:var(--azul-900);color:rgba(255,255,255,.8)}
+  footer.app-footer .small{color:rgba(255,255,255,.6)}
+
+  @media print{
+    .navbar-app,.hero .btn,.stepper,#btnImprimir,footer .btn{display:none!important}
+    body{background:#fff}
+    .card-soft{box-shadow:none;border:1px solid #ddd}
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= NAVBAR ================= -->
+<nav class="navbar navbar-expand-lg navbar-dark navbar-app sticky-top py-2">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="#inicio">
+      <i class="bi bi-mortarboard-fill"></i>
+      <span>UNESR · Núcleo Los Teques</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu" aria-controls="navMenu" aria-expanded="false" aria-label="Abrir menú">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav ms-auto gap-lg-1">
+        <li class="nav-item"><a class="nav-link" href="#inicio"><i class="bi bi-house-door me-1"></i>Inicio</a></li>
+        <li class="nav-item"><a class="nav-link" href="#ruta"><i class="bi bi-signpost-split me-1"></i>Ruta</a></li>
+        <li class="nav-item"><a class="nav-link" href="#actores"><i class="bi bi-diagram-3 me-1"></i>Actores</a></li>
+        <li class="nav-item"><a class="nav-link" href="#portafolio"><i class="bi bi-folder2-open me-1"></i>Portafolio</a></li>
+        <li class="nav-item"><a class="nav-link" href="#fechas"><i class="bi bi-calendar-event me-1"></i>Fechas</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- ================= HERO ================= -->
+<header class="hero">
+  <div class="container">
+    <div class="row align-items-center g-4">
+      <div class="col-lg-8">
+        <p class="text-uppercase fw-bold mb-2" style="font-size:.78rem;letter-spacing:2px;color:#f3d98b">
+          República Bolivariana de Venezuela · Universidad Nacional Experimental Simón Rodríguez
+        </p>
+        <h1 class="display-5 mb-3">Procedimiento para la aprobación de título, tutor y jurado</h1>
+        <p class="lead mb-4">
+          Tesis de grado, proyecto y tesis doctorales — <strong>Núcleo Los Teques</strong>.
+          Consulta la ruta completa, los responsables de cada paso y los plazos establecidos.
+        </p>
+        <div class="d-flex flex-wrap gap-2 mb-3">
+          <span class="badge badge-oro rounded-pill px-3 py-2">Resolución N.º 616</span>
+          <span class="badge badge-oro rounded-pill px-3 py-2">Fecha 10.06.26</span>
+          <span class="badge badge-oro rounded-pill px-3 py-2">C.D N.º 1377-2026</span>
+        </div>
+        <div class="d-flex flex-wrap gap-2 mt-4">
+          <a href="#ruta" class="btn btn-light btn-lg fw-semibold">
+            <i class="bi bi-play-circle me-2"></i>Comenzar la ruta
+          </a>
+          <a href="#portafolio" class="btn btn-outline-light btn-lg fw-semibold">
+            <i class="bi bi-folder2-open me-2"></i>Ver documentos
+          </a>
+        </div>
+      </div>
+      <div class="col-lg-4 d-none d-lg-block text-center">
+        <i class="bi bi-diagram-3-fill" style="font-size:11rem;color:rgba(255,255,255,.12)"></i>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="container py-5">
+
+  <!-- ================= RESUMEN ================= -->
+  <section id="inicio" class="mb-5">
+    <div class="row g-3">
+      <div class="col-6 col-lg-3">
+        <div class="stat-card">
+          <div class="stat-num">5</div>
+          <div class="stat-lbl mt-2">Actores del proceso</div>
+        </div>
+      </div>
+      <div class="col-6 col-lg-3">
+        <div class="stat-card">
+          <div class="stat-num">12</div>
+          <div class="stat-lbl mt-2">Pasos secuenciales</div>
+        </div>
+      </div>
+      <div class="col-6 col-lg-3">
+        <div class="stat-card">
+          <div class="stat-num">15</div>
+          <div class="stat-lbl mt-2">Días antes: envío al jurado</div>
+        </div>
+      </div>
+      <div class="col-6 col-lg-3">
+        <div class="stat-card">
+          <div class="stat-num">72</div>
+          <div class="stat-lbl mt-2">Horas para consignar los CD</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-soft p-4 p-lg-5 mt-4">
+      <div class="row g-4 align-items-start">
+        <div class="col-lg-7">
+          <p class="kicker mb-2">Sobre este procedimiento</p>
+          <h2 class="h5 fw-bold mb-3">¿De qué trata?</h2>
+          <p class="text-secondary mb-3">
+            Este procedimiento regula la solicitud, evaluación, aprobación y notificación del
+            <strong>título de investigación</strong>, del <strong>tutor o tutora</strong> y de los
+            <strong>jurados internos y externos</strong> de las tesis de grado, proyectos de TD y
+            tesis doctorales del Núcleo Los Teques, hasta la defensa pública y oral y la consignación
+            de los ejemplares finales.
+          </p>
+          <div class="alert alert-warning d-flex gap-2 mb-0" role="alert">
+            <i class="bi bi-exclamation-triangle-fill mt-1"></i>
+            <div class="small mb-0">
+              <strong>Punto de decisión:</strong> la Comisión Académica evalúa si la solicitud
+              <em>cumple</em> con los requisitos. Si <strong>no cumple</strong>, la solicitud se
+              devuelve al participante para las correcciones correspondientes antes de continuar.
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-5">
+          <div class="border rounded-4 p-4 bg-light h-100">
+            <p class="kicker mb-3">Datos de la resolución</p>
+            <ul class="list-unstyled mb-0 d-grid gap-3 small">
+              <li class="d-flex gap-2">
+                <i class="bi bi-hash text-primary"></i>
+                <div><span class="text-secondary d-block">Resolución</span><strong>N.º 616</strong></div>
+              </li>
+              <li class="d-flex gap-2">
+                <i class="bi bi-calendar3 text-primary"></i>
+                <div><span class="text-secondary d-block">Fecha</span><strong>10.06.26</strong></div>
+              </li>
+              <li class="d-flex gap-2">
+                <i class="bi bi-file-earmark-text text-primary"></i>
+                <div><span class="text-secondary d-block">Control de documento</span><strong>C.D N.º 1377-2026</strong></div>
+              </li>
+              <li class="d-flex gap-2">
+                <i class="bi bi-person-badge text-primary"></i>
+                <div><span class="text-secondary d-block">Subdirector de Estudios Avanzados e Investigación</span><strong>Dr. Tomás Solano</strong></div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= RUTA ================= -->
+  <section id="ruta" class="mb-5">
+    <p class="kicker mb-2">Paso a paso</p>
+    <h2 class="h3 fw-bold mb-4">Ruta del procedimiento</h2>
+
+    <div class="card-soft p-3 p-lg-4">
+      <div class="d-flex justify-content-between align-items-center mb-3 gap-3 flex-wrap">
+        <h3 class="h6 fw-bold mb-0 text-secondary">
+          <i class="bi bi-signpost-split me-2"></i>Selecciona un paso
+        </h3>
+        <div class="d-flex align-items-center gap-2" style="min-width:190px">
+          <div class="progress flex-grow-1" style="height:8px">
+            <div id="progresoBarra" class="progress-bar bg-dark" style="width:8%"></div>
+          </div>
+          <small id="progresoTexto" class="text-secondary fw-semibold">1 / 12</small>
+        </div>
+      </div>
+
+      <div id="stepper" class="stepper" role="tablist" aria-label="Pasos del procedimiento"></div>
+
+      <div id="detalle" class="mt-2"></div>
+    </div>
+  </section>
+
+  <!-- ================= ACTORES ================= -->
+  <section id="actores" class="mb-5">
+    <p class="kicker mb-2">Diagrama de carriles</p>
+    <h2 class="h3 fw-bold mb-2">Actores y responsabilidades</h2>
+    <p class="text-secondary mb-4">
+      Cada actor agrupa los pasos que le corresponden dentro del flujo. Haz clic en cualquier
+      actividad para ver su detalle en la ruta.
+    </p>
+    <div id="actoresGrid" class="row g-3"></div>
+  </section>
+
+  <!-- ================= PORTAFOLIO ================= -->
+  <section id="portafolio" class="mb-5">
+    <p class="kicker mb-2">Paso 8 del procedimiento</p>
+    <h2 class="h3 fw-bold mb-2">Portafolio del participante</h2>
+    <p class="text-secondary mb-4">
+      Documentos que debe incluir el participante y enviar vía electrónica a
+      <strong>Control de Estudios</strong> de la Subdirección de Estudios Avanzados e Investigación.
+      Marca los que ya tengas listos: tu avance se guarda en este navegador.
+    </p>
+
+    <div class="card-soft p-3 p-lg-4">
+      <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap mb-3">
+        <div class="d-flex align-items-center gap-3 flex-grow-1" style="max-width:520px">
+          <div class="progress flex-grow-1" style="height:12px">
+            <div id="docBarra" class="progress-bar bg-success" style="width:0%"></div>
+          </div>
+          <small id="docTexto" class="fw-semibold text-secondary text-nowrap">0 de 7</small>
+        </div>
+        <button id="btnReiniciarDocs" class="btn btn-sm btn-outline-secondary">
+          <i class="bi bi-arrow-counterclockwise me-1"></i>Reiniciar
+        </button>
+      </div>
+      <div id="docsGrid" class="row g-2"></div>
+    </div>
+  </section>
+
+  <!-- ================= FECHAS ================= -->
+  <section id="fechas" class="mb-5">
+    <p class="kicker mb-2">Planificación</p>
+    <h2 class="h3 fw-bold mb-2">Calculadora de fechas clave</h2>
+    <p class="text-secondary mb-4">
+      Indica la fecha de la defensa pública y oral establecida en el cronograma y obtén
+      automáticamente las fechas límite del procedimiento.
+    </p>
+
+    <div class="card-soft p-3 p-lg-4">
+      <div class="row g-4 align-items-start">
+        <div class="col-lg-4">
+          <label for="fechaDefensa" class="form-label fw-semibold">
+            <i class="bi bi-calendar-check me-1"></i>Fecha de la defensa pública y oral
+          </label>
+          <input type="date" id="fechaDefensa" class="form-control form-control-lg">
+          <div class="form-text">
+            Fecha programada en el cronograma de presentación de los trabajos de investigación
+            de la Subdirección de Estudios Avanzados e Investigación.
+          </div>
+          <button id="btnLimpiarFecha" class="btn btn-link px-0 mt-1">
+            <i class="bi bi-x-circle me-1"></i>Limpiar
+          </button>
+        </div>
+        <div class="col-lg-8">
+          <div id="resultadosFechas" class="row g-3"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ================= FOOTER ================= -->
+<footer class="app-footer py-4 mt-4">
+  <div class="container">
+    <div class="row g-3 align-items-center">
+      <div class="col-md-8">
+        <p class="mb-1 fw-semibold">
+          <i class="bi bi-mortarboard-fill me-2"></i>
+          Universidad Nacional Experimental Simón Rodríguez · Núcleo Los Teques
+        </p>
+        <p class="small mb-0">
+          Dr. Tomás Solano — Subdirector de Estudios Avanzados e Investigación ·
+          Resolución N.º 616 · Fecha 10.06.26 · C.D N.º 1377-2026
+        </p>
+        <p class="small mb-0 mt-1">Referencias: ts/nb/mr/zg/tm/rk/ml/zg</p>
+      </div>
+      <div class="col-md-4 text-md-end">
+        <button id="btnImprimir" class="btn btn-outline-light btn-sm">
+          <i class="bi bi-printer me-1"></i>Imprimir / Guardar PDF
+        </button>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  /* =========================================================
+     1. DATOS DEL PROCEDIMIENTO
+     ========================================================= */
+  const ACTORES = {
+    participante: { nombre: 'Participante', icono: 'bi-person-badge-fill' },
+    subdireccion: { nombre: 'Subdirección de Estudios Avanzados e Investigación', icono: 'bi-building' },
+    comision:     { nombre: 'Comisión Académica', icono: 'bi-people-fill' },
+    secretaria:   { nombre: 'Subdirección de Secretaría', icono: 'bi-file-earmark-text-fill' },
+    control:      { nombre: 'Control de Estudios', icono: 'bi-clipboard-check-fill' }
+  };
+
+  const ORDEN_ACTORES = ['participante', 'subdireccion', 'comision', 'secretaria', 'control'];
+
+  const PASOS = [
+    {
+      n: 1, actor: 'participante', corto: 'Solicitud de título y tutor',
+      titulo: 'Solicitud de aprobación del título y del tutor(a)',
+      detalle: 'Una vez cumplidos los requisitos establecidos en el pénsum correspondiente a su programa, el participante dirige una comunicación a la Subdirección de Estudios Avanzados e Investigación del Núcleo Los Teques, donde solicita la aprobación de su título de investigación y de su tutor(a).',
+      acciones: [
+        'Comunicación de solicitud dirigida a la Subdirección de Estudios Avanzados e Investigación',
+        'Carta de aceptación del tutor(a) anexa a la comunicación'
+      ]
+    },
+    {
+      n: 2, actor: 'subdireccion', corto: 'Recepción de la solicitud',
+      titulo: 'Recepción y presentación ante la Comisión Académica',
+      detalle: 'La Subdirección de Estudios Avanzados e Investigación recibe la comunicación del participante y presenta la solicitud a la Comisión Académica para ser revisada, evaluada y decidir sobre el asunto tratado.',
+      acciones: [
+        'Solicitud presentada formalmente a la Comisión Académica'
+      ]
+    },
+    {
+      n: 3, actor: 'comision', corto: 'Evaluación y jurado',
+      titulo: 'Revisión, decisión y asignación del jurado evaluador',
+      detalle: 'La Comisión Académica revisa las solicitudes de asignación de título y tutor(a). Si la solicitud cumple con los requisitos, procede a asignar el jurado evaluador de la tesis de grado, proyecto de TD o tesis doctoral. Si no cumple, se devuelve para las correcciones correspondientes.',
+      acciones: [
+        'Verificación del cumplimiento de los requisitos',
+        'Asignación del jurado evaluador (interno y externo)'
+      ]
+    },
+    {
+      n: 4, actor: 'comision', corto: 'Acta de decisiones',
+      titulo: 'Elaboración del acta de la Comisión Académica',
+      detalle: 'La Comisión Académica elabora el acta correspondiente sobre las decisiones tomadas en referencia a los títulos, tutores o tutoras y jurados internos y externos asignados.',
+      acciones: [
+        'Acta de la Comisión Académica con las decisiones adoptadas'
+      ]
+    },
+    {
+      n: 5, actor: 'subdireccion', corto: 'Comunicación al Director',
+      titulo: 'Comunicación al Director del Núcleo',
+      detalle: 'La Subdirección de Estudios Avanzados e Investigación elabora la comunicación dirigida al Director del Núcleo para ser presentada en Consejo de Núcleo, y la remite a la Subdirección de Secretaría.',
+      acciones: [
+        'Comunicación al Director del Núcleo',
+        'Remisión a la Subdirección de Secretaría'
+      ]
+    },
+    {
+      n: 6, actor: 'secretaria', corto: 'Resolución del Núcleo',
+      titulo: 'Elaboración de la resolución de aprobación',
+      detalle: 'La Subdirección de Secretaría procede a elaborar la resolución sobre la aprobación del título, tutor(a) y jurados, y la envía a la Subdirección de Estudios Avanzados e Investigación.',
+      acciones: [
+        'Resolución sobre la aprobación del título, tutor(a) y jurados'
+      ]
+    },
+    {
+      n: 7, actor: 'subdireccion', corto: 'Registro y notificación',
+      titulo: 'Registro de la resolución y notificación al participante',
+      detalle: 'La Subdirección de Estudios Avanzados e Investigación recibe la resolución, procede a su registro y notifica al participante.',
+      acciones: [
+        'Registro de la resolución',
+        'Notificación formal al participante'
+      ]
+    },
+    {
+      n: 8, actor: 'participante', corto: 'Portafolio del participante',
+      titulo: 'Elaboración y envío del portafolio',
+      detalle: 'El participante recibe la notificación de la resolución del Núcleo y procede a la elaboración del portafolio con los documentos exigidos, para enviarlo vía electrónica a Control de Estudios de la Subdirección de Estudios Avanzados e Investigación.',
+      acciones: [
+        'Fotocopia de la cédula de identidad del participante',
+        'Carta de aceptación firmada por el tutor(a)',
+        'Formato de solicitud con los datos del participante',
+        'Título de la tesis',
+        'Datos del tutor(a)',
+        'Síntesis de credenciales del tutor(a)',
+        'Resolución del Núcleo',
+        'Envío electrónico a Control de Estudios'
+      ]
+    },
+    {
+      n: 9, actor: 'control', corto: 'Envío al Decanato',
+      titulo: 'Recepción del portafolio y envío al Decanato',
+      detalle: 'Control de Estudios recibe la documentación del participante (portafolio) y procede a enviar vía electrónica las solicitudes al Decanato de Estudios Avanzados y Postgrado.',
+      acciones: [
+        'Recepción del portafolio del participante',
+        'Envío electrónico de las solicitudes al Decanato de Estudios Avanzados y Postgrado'
+      ]
+    },
+    {
+      n: 10, actor: 'subdireccion', corto: 'Programación de la defensa',
+      titulo: 'Notificación, envío al jurado y publicación de la defensa',
+      detalle: 'Recibida y aprobada la resolución por el Decanato de Estudios Avanzados y Postgrado, la Subdirección notifica al participante para continuar con el proceso y establecer su fecha de defensa pública y oral. Una vez establecida en el cronograma de presentación de los trabajos de investigación, envía al jurado asignado el trabajo 15 días antes de la fecha programada para su revisión, y procede a la publicación y divulgación de la fecha y hora de la defensa.',
+      acciones: [
+        'Notificación al participante para establecer la fecha de defensa',
+        'Envío del trabajo al jurado asignado (15 días antes de la fecha programada)',
+        'Publicación y divulgación de la fecha y hora de la defensa pública y oral'
+      ]
+    },
+    {
+      n: 11, actor: 'control', corto: 'Protocolo del acto',
+      titulo: 'Organización del acto de defensa',
+      detalle: 'Control de Estudios organiza el protocolo del acto de defensa, incluyendo la emisión del acta de evaluación.',
+      acciones: [
+        'Protocolo del acto de defensa',
+        'Emisión del acta de evaluación'
+      ]
+    },
+    {
+      n: 12, actor: 'participante', corto: 'Consignación de los CD',
+      titulo: 'Consignación de los dos (2) CD de la tesis',
+      detalle: 'Luego de defendido su trabajo de investigación y de haber obtenido su evaluación, el participante debe consignar ante Control de Estudios dos (2) CD con la tesis de grado o tesis doctoral, en un plazo no mayor a 72 horas luego de su defensa.',
+      acciones: [
+        'Dos (2) CD con la tesis de grado o tesis doctoral',
+        'Consignación en un plazo máximo de 72 horas después de la defensa'
+      ]
+    }
+  ];
+
+  /* =========================================================
+     2. UTILIDADES
+     ========================================================= */
+  const $  = (sel, ctx = document) => ctx.querySelector(sel);
+  const $$ = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
+
+  /* =========================================================
+     3. RUTA INTERACTIVA (stepper + detalle)
+     ========================================================= */
+  const stepper   = $('#stepper');
+  const detalleEl = $('#detalle');
+  const barra     = $('#progresoBarra');
+  const textoProg = $('#progresoTexto');
+  let actual = 0;
+
+  function pintarStepper() {
+    stepper.innerHTML = PASOS.map((p, i) => `
+      <button type="button" class="step-btn" data-actor="${p.actor}" data-i="${i}"
+              role="tab" aria-selected="${i === 0}" aria-label="Paso ${p.n}: ${p.corto}">
+        <span class="step-num">${p.n}</span>
+        <span class="step-txt">${p.corto}</span>
+      </button>
+    `).join('');
+  }
+
+  function centrarBoton(i) {
+    const btn = stepper.children[i];
+    if (!btn) return;
+    stepper.scrollTo({
+      left: btn.offsetLeft - stepper.clientWidth / 2 + btn.clientWidth / 2,
+      behavior: 'smooth'
+    });
+  }
+
+  function pintarDetalle() {
+    const p = PASOS[actual];
+    const info = ACTORES[p.actor];
+
+    detalleEl.innerHTML = `
+      <div class="detalle" data-actor="${p.actor}">
+        <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+          <span class="actor-badge">
+            <i class="bi ${info.icono}"></i>${info.nombre}
+          </span>
+          <span class="badge rounded-pill text-bg-light border">Paso ${p.n} de ${PASOS.length}</span>
+        </div>
+
+        <h3 class="h4 fw-bold mb-2">${p.titulo}</h3>
+        <p class="text-secondary mb-4">${p.detalle}</p>
+
+        <h4 class="h6 text-uppercase fw-bold text-secondary mb-3" style="letter-spacing:.8px">
+          Acciones y entregables
+        </h4>
+        <ul class="lista-acciones">
+          ${p.acciones.map(a => `
+            <li><i class="bi bi-check2-circle"></i><span>${a}</span></li>
+          `).join('')}
+        </ul>
+
+        <div class="d-flex flex-wrap justify-content-between gap-2 mt-4">
+          <button class="btn btn-outline-secondary" id="btnPrev" ${actual === 0 ? 'disabled' : ''}>
+            <i class="bi bi-arrow-left me-1"></i>Anterior
+          </button>
+          <button class="btn btn-dark" id="btnNext" ${actual === PASOS.length - 1 ? 'disabled' : ''}>
+            Siguiente<i class="bi bi-arrow-right ms-1"></i>
+          </button>
+        </div>
+      </div>
+    `;
+
+    $('#btnPrev').addEventListener('click', () => seleccionar(actual - 1));
+    $('#btnNext').addEventListener('click', () => seleccionar(actual + 1));
+
+    const pct = ((actual + 1) / PASOS.length) * 100;
+    barra.style.width = pct + '%';
+    textoProg.textContent = `${actual + 1} / ${PASOS.length}`;
+  }
+
+  function seleccionar(i, hacerScroll) {
+    actual = Math.max(0, Math.min(PASOS.length - 1, i));
+    Array.from(stepper.children).forEach((btn, idx) => {
+      const activo = idx === actual;
+      btn.classList.toggle('active', activo);
+      btn.setAttribute('aria-selected', activo ? 'true' : 'false');
+    });
+    pintarDetalle();
+    if (hacerScroll) centrarBoton(actual);
+  }
+
+  stepper.addEventListener('click', (e) => {
+    const btn = e.target.closest('.step-btn');
+    if (btn) seleccionar(Number(btn.dataset.i));
+  });
+
+  /* =========================================================
+     4. MAPA DE ACTORES
+     ========================================================= */
+  function pintarActores() {
+    const cont = $('#actoresGrid');
+    cont.innerHTML = ORDEN_ACTORES.map(actor => {
+      const info = ACTORES[actor];
+      const pasos = PASOS.map((p, i) => ({ ...p, idx: i })).filter(p => p.actor === actor);
+      return `
+        <div class="col-md-6 col-xl">
+          <div class="actor-card" data-actor="${actor}">
+            <div class="actor-card-head">
+              <i class="bi ${info.icono}"></i>
+              <span>${info.nombre}</span>
+            </div>
+            <div class="flex-grow-1">
+              ${pasos.map(p => `
+                <button class="actor-step" data-i="${p.idx}">
+                  <span class="mini-num">${p.n}</span>
+                  <span>${p.corto}</span>
+                  <i class="bi bi-chevron-right ms-auto small"></i>
+                </button>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    cont.addEventListener('click', (e) => {
+      const btn = e.target.closest('.actor-step');
+      if (!btn) return;
+      seleccionar(Number(btn.dataset.i), true);
+      document.getElementById('ruta').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
+
+  /* =========================================================
+     5. CHECKLIST DEL PORTAFOLIO (localStorage)
+     ========================================================= */
+  const DOCS = [
+    { id: 'cedula',      icono: 'bi-person-vcard',       texto: 'Fotocopia de la cédula de identidad del participante' },
+    { id: 'carta',       icono: 'bi-pen',                texto: 'Carta de aceptación firmada por el tutor(a)' },
+    { id: 'formato',     icono: 'bi-input-cursor-text',  texto: 'Formato de solicitud con los datos del participante' },
+    { id: 'titulo',      icono: 'bi-book',               texto: 'Título de la tesis' },
+    { id: 'datosTutor',  icono: 'bi-person-lines-fill',  texto: 'Datos del tutor(a)' },
+    { id: 'credenciales',icono: 'bi-award',              texto: 'Síntesis de credenciales del tutor(a)' },
+    { id: 'resolucion',  icono: 'bi-file-earmark-check', texto: 'Resolución del Núcleo' }
+  ];
+
+  const LS_KEY = 'unesr-portafolio-v1';
+  let estadoDocs = {};
+
+  function cargarDocs() {
+    try {
+      estadoDocs = JSON.parse(localStorage.getItem(LS_KEY) || '{}') || {};
+    } catch (e) {
+      estadoDocs = {};
+    }
+  }
+
+  function guardarDocs() {
+    try { localStorage.setItem(LS_KEY, JSON.stringify(estadoDocs)); } catch (e) { /* modo privado */ }
+  }
+
+  function pintarDocs() {
+    const cont = $('#docsGrid');
+    cont.innerHTML = DOCS.map(d => {
+      const hecho = !!estadoDocs[d.id];
+      return `
+        <div class="col-md-6">
+          <label class="doc-item ${hecho ? 'hecho' : ''}" for="doc-${d.id}">
+            <input class="form-check-input" type="checkbox" id="doc-${d.id}"
+                   data-id="${d.id}" ${hecho ? 'checked' : ''}>
+            <span class="doc-icon"><i class="bi ${d.icono}"></i></span>
+            <span class="doc-txt">${d.texto}</span>
+          </label>
+        </div>
+      `;
+    }).join('');
+
+    actualizarProgresoDocs();
+  }
+
+  function actualizarProgresoDocs() {
+    const total = DOCS.length;
+    const listos = DOCS.filter(d => estadoDocs[d.id]).length;
+    const pct = Math.round((listos / total) * 100);
+
+    const barraDocs = $('#docBarra');
+    barraDocs.style.width = pct + '%';
+    barraDocs.classList.toggle('bg-success', pct < 100);
+    barraDocs.classList.toggle('bg-primary', pct === 100);
+
+    $('#docTexto').textContent = `${listos} de ${total}`;
+  }
+
+  function initDocs() {
+    cargarDocs();
+    pintarDocs();
+
+    $('#docsGrid').addEventListener('change', (e) => {
+      const chk = e.target.closest('input[type="checkbox"]');
+      if (!chk) return;
+      estadoDocs[chk.dataset.id] = chk.checked;
+      guardarDocs();
+      chk.closest('.doc-item').classList.toggle('hecho', chk.checked);
+      actualizarProgresoDocs();
+    });
+
+    $('#btnReiniciarDocs').addEventListener('click', () => {
+      estadoDocs = {};
+      guardarDocs();
+      pintarDocs();
+    });
+  }
+
+  /* =========================================================
+     6. CALCULADORA DE FECHAS CLAVE
+     ========================================================= */
+  const inputFecha = $('#fechaDefensa');
+  const cajaFechas = $('#resultadosFechas');
+
+  function formatearFecha(d) {
+    try {
+      return d.toLocaleDateString('es-VE', {
+        weekday: 'long', day: '2-digit', month: 'long', year: 'numeric'
+      });
+    } catch (e) {
+      return d.toLocaleDateString();
+    }
+  }
+
+  function tarjetaFecha(icono, etiqueta, valor, nota, destacado) {
+    return `
+      <div class="col-md-4">
+        <div class="fecha-card ${destacado ? 'destacado' : ''}">
+          <div class="fc-lbl"><i class="bi ${icono} me-1"></i>${etiqueta}</div>
+          <div class="fc-val">${valor}</div>
+          <div class="small text-secondary mt-1">${nota}</div>
+        </div>
+      </div>
+    `;
+  }
+
+  function calcularFechas() {
+    const val = inputFecha.value;
+
+    if (!val) {
+      cajaFechas.innerHTML = `
+        <div class="col-12">
+          <div class="alert alert-light border mb-0 d-flex gap-2 align-items-start">
+            <i class="bi bi-info-circle mt-1"></i>
+            <span class="small">
+              Selecciona una fecha para calcular el envío al jurado (15 días antes),
+              la defensa y la consignación de los CD (72 horas después).
+            </span>
+          </div>
+        </div>
+      `;
+      return;
+    }
+
+    const base = new Date(val + 'T00:00:00');
+    if (isNaN(base.getTime())) return;
+
+    const envioJurado = new Date(base);
+    envioJurado.setDate(envioJurado.getDate() - 15);
+
+    const entregaCD = new Date(base);
+    entregaCD.setDate(entregaCD.getDate() + 3);
+
+    cajaFechas.innerHTML =
+      tarjetaFecha(
+        'bi-send-check', 'Envío al jurado',
+        formatearFecha(envioJurado),
+        '15 días antes de la fecha programada, para su revisión.',
+        false
+      ) +
+      tarjetaFecha(
+        'bi-mic', 'Defensa pública y oral',
+        formatearFecha(base),
+        'Fecha establecida en el cronograma de presentación.',
+        true
+      ) +
+      tarjetaFecha(
+        'bi-disc', 'Consignación de los 2 CD',
+        formatearFecha(entregaCD),
+        'Plazo máximo de 72 horas luego de la defensa.',
+        false
+      );
+  }
+
+  function initFechas() {
+    inputFecha.addEventListener('change', calcularFechas);
+    inputFecha.addEventListener('input', calcularFechas);
+    $('#btnLimpiarFecha').addEventListener('click', () => {
+      inputFecha.value = '';
+      calcularFechas();
+    });
+    calcularFechas();
+  }
+
+  /* =========================================================
+     7. IMPRIMIR
+     ========================================================= */
+  function initImprimir() {
+    $('#btnImprimir').addEventListener('click', () => window.print());
+  }
+
+  /* =========================================================
+     8. ARRANQUE
+     ========================================================= */
+  document.addEventListener('DOMContentLoaded', () => {
+    pintarStepper();
+    seleccionar(0, false);
+    pintarActores();
+    initDocs();
+    initFechas();
+    initImprimir();
+
+    // Cierra el menú móvil al hacer clic en un enlace
+    $$('#navMenu .nav-link').forEach(link => {
+      link.addEventListener('click', () => {
+        const menu = document.getElementById('navMenu');
+        if (menu.classList.contains('show')) {
+          bootstrap.Collapse.getOrCreateInstance(menu).hide();
+        }
+      });
+    });
+  });
+})();
+</script>
+</body>
+</html>
